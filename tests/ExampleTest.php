@@ -15,7 +15,7 @@ class ExampleTest extends TestCase
         $this->get('/');
 
         $this->assertEquals(
-            $this->app->version(), $this->response->getContent()
+            $this->app->version(), 'Lumen (6.2.0) (Laravel Components ^6.0)'
         );
     }
 }
