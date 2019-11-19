@@ -80,7 +80,10 @@ if (env('APP_DEBUG')) {
     $app->configure('debugbar');
     $app->register(Barryvdh\Debugbar\LumenServiceProvider::class);
 }
-//$app->register(App\Providers\AppServiceProvider::class);
+
+$app->register(App\Providers\AppServiceProvider::class);
+
+
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
