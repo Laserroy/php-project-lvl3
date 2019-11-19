@@ -1,7 +1,7 @@
 <?php
 $url = parse_url(getenv('DATABASE_URL'));
 return [
-'default' => env('DB_CONNECTION', 'sqlite'),
+'default' => env('DB_CONNECTION', 'dev'),
 'migrations' => 'migrations',
 'connections' => [
      'testing' => [
