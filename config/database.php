@@ -1,6 +1,5 @@
 <?php
 $url = parse_url(getenv('DATABASE_URL'));
-var_dump($url);
 return [
 'default' => env('DB_CONNECTION', 'sqlite'),
 'migrations' => 'migrations',
