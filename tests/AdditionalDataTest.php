@@ -7,31 +7,16 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Request;
 
 class DatabaseTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function testAddDomain()
-    {
-        $this->call('POST', '/domains', ['url' => 'https://lumen.laravel.com']);
-
-        $this->seeInDatabase('domains', ['name' => 'https://lumen.laravel.com']);
-    }
-
-    public function testDomainsPage()
-    {
-        $response = $this->call('GET', '/domains');
-        $this->assertEquals(200, $response->status());
-        $this->assertStringContainsString('<html>', $response->getContent());
-    }
-
-    public function testAdditionalData()
+    public function testAdditionalDomainData()
     {
         $status = 200;
         $headers = ['Content-Length' => 666];
-        $body = 'Awesome!';
+        $body = '<h1>Awesome!</h1>';
         $mock = new MockHandler([
             new Response($status, $headers, $body)
         ]);
@@ -44,7 +29,8 @@ class DatabaseTest extends TestCase
         $this->seeInDatabase('domains', ['name' => 'https://stackoverflow.com/',
                                          'content_length' => 666,
                                          'status' => 200,
-                                         'body' => 'Awesome!',
+                                         'body' => $body,
+                                         'header1' => 'Awesome!',
                                          'record_state' => 'complete']);
     }
 }
