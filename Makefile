@@ -7,4 +7,4 @@ run:
 logs:
 	tail -f storage/logs/lumen.log
 lint:
-	composer run-script phpcs -- --standard=PSR12 routes public
+	composer run-script phpcs -- --standard=PSR12 routes public config tests

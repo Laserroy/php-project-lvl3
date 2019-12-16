@@ -11,10 +11,10 @@
 |
 */
 
-$router->get('/', function () {
-    return view('main');
-});
+$router->get('/', ['as' => 'main_page', 'uses' => 'DomainsController@showMainPage']);
 
-$router->post('/domains', 'DomainsController@addDomain');
+$router->post('/domains', ['as' => 'add_domain', 'uses' => 'DomainsController@addDomain']);
+
+$router->get('/domains', ['as' => 'domains', 'uses' => 'DomainsController@getDomains']);
 
 $router->get('/domains/{id}', ['as' => 'domain', 'uses' => 'DomainsController@getDomain']);

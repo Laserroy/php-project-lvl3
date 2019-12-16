@@ -6,6 +6,8 @@
     "type": "project",
     "require": {
         "php": "^7.2",
+        "guzzlehttp/guzzle": "^6.4",
+        "imangazaliev/didom": "^1.14",
         "laravel/lumen-framework": "^6.0"
     },
     "require-dev": {
@@ -25,8 +27,11 @@
         }
     },
     "autoload-dev": {
+        "psr-4" : {
+            "Tests\\": "tests/"
+        },
         "classmap": [
-            "tests/"
+            "tests/TestCase.php"
         ]
     },
     "scripts": {
