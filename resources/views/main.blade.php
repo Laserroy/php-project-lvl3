@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('navbar')
-  @parent
+    @parent
 @endsection
 
 @section('primary_content')
-  @parent
+    @parent
 @endsection
