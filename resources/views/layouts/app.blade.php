@@ -22,7 +22,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item active">
-                        <a class="nav-link" href="/domains">Domains<span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{{ $link = route('domains.index') }}">Domains<span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
             </div>
@@ -31,7 +31,7 @@
 
     @section('primary_content')
         <div class="jumbotron">
-            <form action="/domains" method="post">
+            <form action="{{ $actionUrl = route('domains.store') }}" method="post">
                 <div class="form-group">
                     <label for="urlinput">Url</label>
                     <input type="text" name="url" class="form-control" id="urlinput" aria-describedby="inputHelp" placeholder="Enter url">
