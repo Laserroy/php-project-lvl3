@@ -1,7 +1,7 @@
 <?php
 $url = parse_url(getenv('DATABASE_URL'));
 return [
-'default' => env('DB_CONNECTION', 'dev'),
+'default' => env('DB_CONNECTION', 'development'),
 'migrations' => 'migrations',
 'connections' => [
      'testing' => [
