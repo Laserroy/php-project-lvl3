@@ -19,38 +19,43 @@ class CollectAdditionalData extends Job
 
     public function handle(Client $client)
     {
-        $clientsResponse = $client->get($this->url);
-        $responseStatus = $clientsResponse->getStatusCode();
-        $responseBody = (string) $clientsResponse->getBody();
-        $responseContentLength = $clientsResponse->getHeader('Content-Length')[0] ?? null;
+        try {
+            $clientsResponse = $client->get($this->url);
+            $responseStatus = $clientsResponse->getStatusCode() ?? null;
+            $responseBody = (string) $clientsResponse->getBody() ?? null;
+            $responseContentLength = $clientsResponse->getHeader('Content-Length')[0] ?? null;
+       
+            $document = new Document($responseBody);
 
-        $document = new Document($responseBody);
-
-        $firstHeader = null;
-        $description = null;
-        $keywords = null;
+            $firstHeader = null;
+            $description = null;
+            $keywords = null;
         
-        if ($document->has('h1')) {
-            $firstHeader = $document->first('h1')->text();
-        }
+            if ($document->has('h1')) {
+                $firstHeader = $document->first('h1')->text();
+            }
 
-        if ($document->has('meta[name*=keywords]')) {
-            $keywords = $document->first('meta[name*=keywords]')->getAttribute('content');
-        }
+            if ($document->has('meta[name*=keywords]')) {
+                $keywords = $document->first('meta[name*=keywords]')->getAttribute('content');
+            }
 
-        if ($document->has('meta[name*=description]')) {
-            $description = $document->first('meta[name*=description]')->getAttribute('content');
-        }
+            if ($document->has('meta[name*=description]')) {
+                $description = $document->first('meta[name*=description]')->getAttribute('content');
+            }
 
-        DB::table('domains')->where('id', $this->recordId)
-                            ->update(
-                                ['status' => $responseStatus,
-                                'content_length' => $responseContentLength,
-                                'body' => $responseBody,
-                                'header1' => $firstHeader,
-                                'description' => $description,
-                                'keywords' => $keywords,
-                                'record_state' => 'complete']
-                            );
+            DB::table('domains')->where('id', $this->recordId)
+                                ->update([
+                                    'status' => $responseStatus,
+                                    'content_length' => $responseContentLength,
+                                    'body' => $responseBody,
+                                    'header1' => $firstHeader,
+                                    'description' => $description,
+                                    'keywords' => $keywords,
+                                    'record_state' => 'complete'
+                                ]);
+        } catch (\Exception $e) {
+            DB::table('domains')->where('id', $this->recordId)
+                                ->update(['record_state' => 'fail']);
+        }
     }
 }

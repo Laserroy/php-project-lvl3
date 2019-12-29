@@ -4,8 +4,10 @@ namespace Tests;
 
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +23,8 @@ class DomainControllerTest extends TestCase
         $status = 200;
         $headers = ['Content-Length' => 666];
         $mock = new MockHandler([
-            new Response($status, $headers, $this->body)
+            new Response($status, $headers, $this->body),
+            new RequestException('Error Communicating with Server', new Request('GET', 'test'))
         ]);
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
@@ -40,12 +43,16 @@ class DomainControllerTest extends TestCase
                                          'body' => $this->body,
                                          'keywords' => 'keyword',
                                          'header1' => 'Header']);
+
+        $response2 = $this->post(route('domains.store'), ['url' => 'https://error.com']);
+        $response2->assertResponseStatus(200);
+        $this->notSeeInDatabase('domains', ['name' => 'https://error.com']);
     }
 
     public function testShow()
     {
-        $currentId = DB::table('domains')->insertGetId(['name' => 'https://example.com', 'record_state' => 'complete']);
-        $response = $this->get(route('domains.show', ['id' => $currentId]));
+        $domainId = DB::table('domains')->insertGetId(['name' => 'https://example.com', 'record_state' => 'complete']);
+        $response = $this->get(route('domains.show', ['id' => $domainId]));
         $response->assertResponseStatus(200);
     }
 

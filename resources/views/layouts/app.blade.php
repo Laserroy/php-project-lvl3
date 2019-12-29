@@ -5,6 +5,9 @@
     </head>
 
     <body>
+    @if (!empty($message))
+        <p>{{ $message }}</p>
+    @endif
     @if (!empty($errors))
         <ul>
         @foreach ($errors->all() as $error)

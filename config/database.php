@@ -8,7 +8,7 @@ return [
          'driver'   => 'sqlite',
          'database' => env('DB_DATABASE', database_path('test_database.sqlite')),
      ],
-     'dev' => [
+     'development' => [
         'driver'   => 'sqlite',
         'database' => env('DB_DATABASE', database_path('database.sqlite')),
      ],
