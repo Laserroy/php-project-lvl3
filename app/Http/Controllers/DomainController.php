@@ -20,8 +20,6 @@ class DomainController extends BaseController
 
     public function store(Request $request)
     {
-        $givenUrl = $request->input('url');
-        
         $validator = Validator::make($request->all(), [
             'url' => 'required|url'
         ]);
@@ -30,48 +28,46 @@ class DomainController extends BaseController
             return view('main', ['errors' => $validator->errors()]);
         }
 
-        if (DB::table('domains')->where('name', $givenUrl)->doesntExist()) {
-            $domainId = DB::table('domains')->insertGetId(['name' => $givenUrl, 'record_state' => 'init']);
-            dispatch(new CollectAdditionalData($givenUrl, $domainId));
+        $urlFromInput = $request->input('url');
+        $isDomainInDatabase = DB::table('domains')->where('name', $urlFromInput)->exists();
+        $domainId = DB::table('domains')->where('name', $urlFromInput)->value('id');
+
+        if (!$isDomainInDatabase) {
+            $domainId = DB::table('domains')->insertGetId(['name' => $urlFromInput, 'record_state' => 'init']);
+            dispatch(new CollectAdditionalData($urlFromInput, $domainId));
         }
-        $domainId = DB::table('domains')->where('name', $givenUrl)->value('id');
-        $domain = DB::table('domains')->find($domainId);
-        $domainState = $domain->record_state;
         
-        return $this->doStateDependAction($domainState, $domain);
+        return $this->show($request, $domainId);
     }
 
     public function show(Request $request, $id)
     {
-        $domainData = DB::table('domains')
-                        ->where('id', '=', $id)
-                        ->get();
-        if ($domainData[0]->record_state === 'complete') {
-            return view('domain', ['data' => $domainData]);
+        $domainViewMap = [
+            'init' => function ($domain) {
+                return view('main', ['message' => 'Please wait for results']);
+            },
+            'fail' => function ($domain) {
+                return view('domain_fail', ['domain' => $domain]);
+            },
+            'complete' => function ($domain) {
+                return view('domain', ['domain' => $domain]);
+            }
+        ];
+        
+        $domain = DB::table('domains')->find($id);
+
+        if (!$domain) {
+            abort(404);
         }
+        
+        $state = $domain->record_state;
+        
+        return $domainViewMap[$state]($domain);
     }
 
     public function index(Request $request)
     {
         $domains = DB::table('domains')->simplePaginate(5);
         return view('domains', ['domains' => $domains]);
-    }
-
-    private function doStateDependAction($state, $domain)
-    {
-        $stateActionMap = [
-            'init' => function ($domain) {
-                return redirect()->route('main_page');
-            },
-            'fail' => function ($domain) {
-                DB::table('domains')->delete($domain->id);
-                return view('main', ['message' => 'Aborted! Check your url or try later']);
-            },
-            'complete' => function ($domain) {
-                return redirect()->route('domains.show', ['id' => $domain->id]);
-            }
-        ];
-
-        return $stateActionMap[$state]($domain);
     }
 }

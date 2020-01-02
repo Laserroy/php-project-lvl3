@@ -19,7 +19,6 @@
         </thead>
         <tbody>
             <tr>
-            @foreach ($data as $domain)
                 <th scope="row">{{$domain->id}}</th>
                 <td>{{$domain->name}}</td>
                 <td>{{$domain->status}}</td>
@@ -27,7 +26,6 @@
                 <td>{{$domain->header1}}</td>
                 <td>{{$domain->description}}</td>
                 <td>{{$domain->keywords}}</td>
-            @endforeach
             </tr>
         </tbody>
     </table>

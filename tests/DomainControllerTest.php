@@ -36,17 +36,22 @@ class DomainControllerTest extends TestCase
     public function testStore()
     {
         $response = $this->post(route('domains.store'), ['url' => 'https://example.com']);
-        $response->assertResponseStatus(302);
-        $this->seeInDatabase('domains', ['name' => 'https://example.com',
-                                         'content_length' => 666,
-                                         'status' => 200,
-                                         'body' => $this->body,
-                                         'keywords' => 'keyword',
-                                         'header1' => 'Header']);
+        $response->assertResponseStatus(200);
+        $this->seeInDatabase('domains', [
+                                            'name' => 'https://example.com',
+                                            'content_length' => 666,
+                                            'status' => 200,
+                                            'body' => $this->body,
+                                            'keywords' => 'keyword',
+                                            'header1' => 'Header'
+                                        ]);
 
         $response2 = $this->post(route('domains.store'), ['url' => 'https://error.com']);
         $response2->assertResponseStatus(200);
-        $this->notSeeInDatabase('domains', ['name' => 'https://error.com']);
+        $this->seeInDatabase('domains', [
+                                            'name' => 'https://error.com',
+                                            'record_state' => 'fail'
+                                        ]);
     }
 
     public function testShow()
