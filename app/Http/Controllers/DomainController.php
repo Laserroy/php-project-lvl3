@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain;
 use App\Jobs\CollectAdditionalData;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use Validator;
 
@@ -29,15 +29,17 @@ class DomainController extends BaseController
         }
 
         $urlFromInput = $request->input('url');
-        $isDomainInDatabase = DB::table('domains')->where('name', $urlFromInput)->exists();
-        $domainId = DB::table('domains')->where('name', $urlFromInput)->value('id');
+        $domain = Domain::where('name', $urlFromInput)->first();
 
-        if (!$isDomainInDatabase) {
-            $domainId = DB::table('domains')->insertGetId(['name' => $urlFromInput, 'record_state' => 'init']);
-            dispatch(new CollectAdditionalData($urlFromInput, $domainId));
+        if (!$domain) {
+            $domain = new Domain();
+            $domain->name = $urlFromInput;
+            $domain->record_state = 'init';
+            $domain->save();
+            dispatch(new CollectAdditionalData($urlFromInput, $domain->id));
         }
         
-        return $this->show($request, $domainId);
+        return $this->show($request, $domain->id);
     }
 
     public function show(Request $request, $id)
@@ -54,12 +56,7 @@ class DomainController extends BaseController
             }
         ];
         
-        $domain = DB::table('domains')->find($id);
-
-        if (!$domain) {
-            abort(404);
-        }
-        
+        $domain = Domain::findOrFail($id);
         $state = $domain->record_state;
         
         return $domainViewMap[$state]($domain);
@@ -67,7 +64,7 @@ class DomainController extends BaseController
 
     public function index(Request $request)
     {
-        $domains = DB::table('domains')->simplePaginate(5);
+        $domains = Domain::paginate(5);
         return view('domains', ['domains' => $domains]);
     }
 }

@@ -9,7 +9,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Facades\DB;
+use App\Domain;
 
 class DomainControllerTest extends TestCase
 {
@@ -56,14 +56,18 @@ class DomainControllerTest extends TestCase
 
     public function testShow()
     {
-        $domainId = DB::table('domains')->insertGetId(['name' => 'https://example.com', 'record_state' => 'complete']);
-        $response = $this->get(route('domains.show', ['id' => $domainId]));
+        $domain = new Domain();
+        $domain->name = 'https://example.com';
+        $domain->record_state = 'complete';
+        $domain->save();
+        
+        $response = $this->get(route('domains.show', ['id' => $domain->id]));
         $response->assertResponseStatus(200);
     }
 
     public function testIndex()
     {
-        DB::table('domains')->insert([
+        Domain::insert([
             ['name' => 'https://example.com', 'record_state' => 'complete'],
             ['name' => 'https://example2.com', 'record_state' => 'complete'],
             ['name' => 'https://example3.com', 'record_state' => 'complete'],

@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
 use DiDom\Document;
+use App\Domain;
 
 class CollectAdditionalData extends Job
 {
@@ -43,7 +43,7 @@ class CollectAdditionalData extends Job
                 $description = $document->first('meta[name*=description]')->getAttribute('content');
             }
 
-            DB::table('domains')->where('id', $this->recordId)
+            Domain::where('id', $this->recordId)
                                 ->update([
                                     'status' => $responseStatus,
                                     'content_length' => $responseContentLength,
@@ -54,8 +54,9 @@ class CollectAdditionalData extends Job
                                     'record_state' => 'complete'
                                 ]);
         } catch (\Exception $e) {
-            DB::table('domains')->where('id', $this->recordId)
-                                ->update(['record_state' => 'fail']);
+            $domain = Domain::find($this->recordId);
+            $domain->record_state = 'fail';
+            $domain->save();
         }
     }
 }
