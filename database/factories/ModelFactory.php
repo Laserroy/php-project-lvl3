@@ -17,3 +17,16 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'email' => $faker->email,
     ];
 });
+
+$factory->define(App\Domain::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->url,
+        'status' => 200,
+        'content_length' => $faker->randomDigit,
+        'body' => $faker->randomHtml(2, 3),
+        'header1' => 'Header',
+        'description' => 'description',
+        'keywords' => 'keyword',
+        'state' => 'init'
+    ];
+});

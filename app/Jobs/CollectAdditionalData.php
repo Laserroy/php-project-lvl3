@@ -19,6 +19,8 @@ class CollectAdditionalData extends Job
 
     public function handle(Client $client)
     {
+        $domain = Domain::find($this->recordId);
+        
         try {
             $clientsResponse = $client->get($this->url);
             $responseStatus = $clientsResponse->getStatusCode() ?? null;
@@ -26,7 +28,6 @@ class CollectAdditionalData extends Job
             $responseContentLength = $clientsResponse->getHeader('Content-Length')[0] ?? null;
        
             $document = new Document($responseBody);
-
             $firstHeader = null;
             $description = null;
             $keywords = null;
@@ -34,16 +35,14 @@ class CollectAdditionalData extends Job
             if ($document->has('h1')) {
                 $firstHeader = $document->first('h1')->text();
             }
-
             if ($document->has('meta[name*=keywords]')) {
                 $keywords = $document->first('meta[name*=keywords]')->getAttribute('content');
             }
-
             if ($document->has('meta[name*=description]')) {
                 $description = $document->first('meta[name*=description]')->getAttribute('content');
             }
 
-            Domain::where('id', $this->recordId)
+            Domain::whereId($this->recordId)
                                 ->update([
                                     'status' => $responseStatus,
                                     'content_length' => $responseContentLength,
@@ -51,11 +50,11 @@ class CollectAdditionalData extends Job
                                     'header1' => $firstHeader,
                                     'description' => $description,
                                     'keywords' => $keywords,
-                                    'record_state' => 'complete'
                                 ]);
+            $domain->setAsCompleted();
+            $domain->save();
         } catch (\Exception $e) {
-            $domain = Domain::find($this->recordId);
-            $domain->record_state = 'fail';
+            $domain->setAsFailed();
             $domain->save();
         }
     }

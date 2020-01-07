@@ -22,7 +22,7 @@ class CreateDomainsTable extends Migration
             $table->string('header1')->nullable();
             $table->string('description')->nullable();
             $table->string('keywords')->nullable();
-            $table->string('record_state');
+            $table->string('state')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->dateTime('updated_at')->nullable();
         });

@@ -8,6 +8,7 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DomainController extends BaseController
 {
@@ -29,17 +30,15 @@ class DomainController extends BaseController
         }
 
         $urlFromInput = $request->input('url');
-        $domain = Domain::where('name', $urlFromInput)->first();
-
-        if (!$domain) {
-            $domain = new Domain();
-            $domain->name = $urlFromInput;
-            $domain->record_state = 'init';
-            $domain->save();
+        
+        try {
+            $domain = Domain::whereName($urlFromInput)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            $domain = Domain::create(['name' => $urlFromInput]);
             dispatch(new CollectAdditionalData($urlFromInput, $domain->id));
         }
         
-        return $this->show($request, $domain->id);
+        return redirect(route('domains.show', ['id' => $domain->id]));
     }
 
     public function show(Request $request, $id)
@@ -48,18 +47,17 @@ class DomainController extends BaseController
             'init' => function ($domain) {
                 return view('main', ['message' => 'Please wait for results']);
             },
-            'fail' => function ($domain) {
+            'failed' => function ($domain) {
                 return view('domain_fail', ['domain' => $domain]);
             },
-            'complete' => function ($domain) {
+            'completed' => function ($domain) {
                 return view('domain', ['domain' => $domain]);
             }
         ];
         
         $domain = Domain::findOrFail($id);
-        $state = $domain->record_state;
         
-        return $domainViewMap[$state]($domain);
+        return $domainViewMap[$domain->state]($domain);
     }
 
     public function index(Request $request)
