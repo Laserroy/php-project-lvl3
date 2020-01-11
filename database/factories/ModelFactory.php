@@ -27,6 +27,6 @@ $factory->define(App\Domain::class, function (Faker\Generator $faker) {
         'header1' => 'Header',
         'description' => 'description',
         'keywords' => 'keyword',
-        'state' => 'init'
+        'state' => 'initiated'
     ];
 });

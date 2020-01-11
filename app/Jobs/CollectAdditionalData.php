@@ -8,21 +8,17 @@ use App\Domain;
 
 class CollectAdditionalData extends Job
 {
-    private $url;
-    private $recordId;
+    private $domain;
 
-    public function __construct($url, $recordId)
+    public function __construct(Domain $domain)
     {
-        $this->url = $url;
-        $this->recordId = $recordId;
+        $this->domain = $domain;
     }
 
     public function handle(Client $client)
     {
-        $domain = Domain::find($this->recordId);
-        
         try {
-            $clientsResponse = $client->get($this->url);
+            $clientsResponse = $client->get($this->domain->name);
             $responseStatus = $clientsResponse->getStatusCode() ?? null;
             $responseBody = (string) $clientsResponse->getBody() ?? null;
             $responseContentLength = $clientsResponse->getHeader('Content-Length')[0] ?? null;
@@ -42,7 +38,7 @@ class CollectAdditionalData extends Job
                 $description = $document->first('meta[name*=description]')->getAttribute('content');
             }
 
-            Domain::whereId($this->recordId)
+            Domain::whereId($this->domain->id)
                                 ->update([
                                     'status' => $responseStatus,
                                     'content_length' => $responseContentLength,
@@ -51,11 +47,11 @@ class CollectAdditionalData extends Job
                                     'description' => $description,
                                     'keywords' => $keywords,
                                 ]);
-            $domain->setAsCompleted();
-            $domain->save();
+            $this->domain->stateMachine()->apply('processed');
+            $this->domain->save();
         } catch (\Exception $e) {
-            $domain->setAsFailed();
-            $domain->save();
+            $this->domain->stateMachine()->apply('errored');
+            $this->domain->save();
         }
     }
 }

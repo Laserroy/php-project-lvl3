@@ -5,26 +5,30 @@
 @endsection
 
 @section('primary_content')
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">id</th>
-                <th scope="col">name</th>
-                <th scope="col">status</th>
-                <th scope="col">content length</th>
-                <th scope="col">header</th>
-                <th scope="col">description</th>
-                <th scope="col">keywords</th>
-            </tr>
-        </thead>
+    <table class="table table-striped">
         <tbody>
             <tr>
-                <th scope="row">{{$domain->id}}</th>
+                <th scope="row">id</th>
+                <td>{{$domain->id}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Name</th>
                 <td>{{$domain->name}}</td>
-                <td>{{$domain->status}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Content length</th>
                 <td>{{$domain->content_length}}</td>
+            </tr>
+            <tr>
+                <th scope="row">First header</th>
                 <td>{{$domain->header1}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Description</th>
                 <td>{{$domain->description}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Keywords</th>
                 <td>{{$domain->keywords}}</td>
             </tr>
         </tbody>

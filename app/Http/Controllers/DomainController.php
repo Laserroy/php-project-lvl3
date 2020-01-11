@@ -8,7 +8,6 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Validator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DomainController extends BaseController
 {
@@ -30,21 +29,19 @@ class DomainController extends BaseController
         }
 
         $urlFromInput = $request->input('url');
+        $domain = Domain::firstOrCreate(['name' => $urlFromInput]);
         
-        try {
-            $domain = Domain::whereName($urlFromInput)->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            $domain = Domain::create(['name' => $urlFromInput]);
-            dispatch(new CollectAdditionalData($urlFromInput, $domain->id));
+        if ($domain->stateMachine()->can('processed')) {
+            dispatch(new CollectAdditionalData($domain));
         }
-        
-        return redirect(route('domains.show', ['id' => $domain->id]));
+
+        return redirect(route('domains.show', ['id' => $domain]));
     }
 
-    public function show(Request $request, $id)
+    public function show($id)
     {
         $domainViewMap = [
-            'init' => function ($domain) {
+            'initiated' => function ($domain) {
                 return view('main', ['message' => 'Please wait for results']);
             },
             'failed' => function ($domain) {

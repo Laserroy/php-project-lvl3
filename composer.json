@@ -8,7 +8,8 @@
         "php": "^7.2",
         "guzzlehttp/guzzle": "^6.4",
         "imangazaliev/didom": "^1.14",
-        "laravel/lumen-framework": "^6.0"
+        "laravel/lumen-framework": "^6.0",
+        "sebdesign/laravel-state-machine": "^2.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",

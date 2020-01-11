@@ -74,6 +74,7 @@ $app->middleware([
 | totally optional, so you are not required to uncomment this line.
 |
 */
+$app->configure('state-machine');
 if (env('APP_DEBUG')) {
     $app->configure('app');
     $app->configure('debugbar');

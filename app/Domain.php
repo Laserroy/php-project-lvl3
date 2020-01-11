@@ -3,22 +3,19 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use SM\Factory\Factory as SMFactory;
 
 class Domain extends Model
 {
     protected $fillable = ['name'];
     
     protected $attributes = [
-        'state' => 'init'
+        'state' => 'initiated'
     ];
 
-    public function setAsFailed()
+    public function stateMachine()
     {
-        $this->state = 'failed';
-    }
-
-    public function setAsCompleted()
-    {
-        $this->state = 'completed';
+        $factory = new SMFactory(config('state-machine'));
+        return $factory->get($this, 'domain_graph');
     }
 }
