@@ -7,7 +7,7 @@ use App\Jobs\CollectAdditionalData;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class DomainController extends BaseController
 {
@@ -20,20 +20,14 @@ class DomainController extends BaseController
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'url' => 'required|url'
-        ]);
-
+        $validator = Validator::make($request->all(), ['url' => 'required|url']);
         if ($validator->fails()) {
             return view('main', ['errors' => $validator->errors()]);
         }
 
         $urlFromInput = $request->input('url');
         $domain = Domain::firstOrCreate(['name' => $urlFromInput]);
-        
-        if ($domain->stateMachine()->can('processed')) {
-            dispatch(new CollectAdditionalData($domain));
-        }
+        dispatch(new CollectAdditionalData($domain));
 
         return redirect(route('domains.show', ['id' => $domain]));
     }

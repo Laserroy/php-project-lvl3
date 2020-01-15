@@ -13,11 +13,11 @@ return [
             'failed',
         ],
         'transitions' => [
-            'processed' => [
+            'process' => [
                 'from' => ['initiated'],
                 'to' => 'completed',
             ],
-            'errored' => [
+            'error' => [
                 'from' => ['initiated'],
                 'to' => 'failed',
             ],

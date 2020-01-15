@@ -8,12 +8,12 @@
     <table class="table table-striped">
         <tbody>
             <tr>
-                <th scope="row">id</th>
-                <td>{{$domain->id}}</td>
-            </tr>
-            <tr>
                 <th scope="row">Name</th>
                 <td>{{$domain->name}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Status code</th>
+                <td>{{$domain->status}}</td>
             </tr>
             <tr>
                 <th scope="row">Content length</th>

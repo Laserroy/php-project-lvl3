@@ -47,10 +47,10 @@ class CollectAdditionalData extends Job
                                     'description' => $description,
                                     'keywords' => $keywords,
                                 ]);
-            $this->domain->stateMachine()->apply('processed');
+            $this->domain->stateMachine()->apply('process');
             $this->domain->save();
         } catch (\Exception $e) {
-            $this->domain->stateMachine()->apply('errored');
+            $this->domain->stateMachine()->apply('error');
             $this->domain->save();
         }
     }

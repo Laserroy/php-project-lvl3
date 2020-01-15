@@ -8,14 +8,12 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">Id</th>
             <th scope="col">Name</th>
         </tr>
     </thead>
     <tbody>
     @foreach ($domains as $domain)
         <tr>
-            <td>{{$domain->id}}</td>
             <td><a href="{{ $link = route('domains.show', ['id' => $domain->id]) }}">{{$domain->name}}</a> </td>
         </tr>
     @endforeach

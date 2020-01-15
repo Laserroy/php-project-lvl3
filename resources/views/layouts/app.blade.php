@@ -36,11 +36,11 @@
         <div class="jumbotron">
             <form action="{{ $actionUrl = route('domains.store') }}" method="post">
                 <div class="form-group">
-                    <label for="urlinput">Url</label>
-                    <input type="text" name="url" class="form-control" id="urlinput" aria-describedby="inputHelp" placeholder="Enter url">
-                    <small id="inputHelp" class="form-text text-muted">Enter any url</small>
+                    <label for="urlinput">Add domain</label>
+                    <input type="text" name="url" class="form-control" id="urlinput" aria-describedby="inputHelp" placeholder="https://example.com">
+                    <small id="inputHelp" class="form-text text-muted">enter domain for scanning</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     @show
