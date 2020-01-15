@@ -50,7 +50,7 @@ class CollectAdditionalData extends Job
             $this->domain->stateMachine()->apply('process');
             $this->domain->save();
         } catch (\Exception $e) {
-            $this->domain->stateMachine()->apply('error');
+            $this->domain->stateMachine()->apply('reject');
             $this->domain->save();
         }
     }

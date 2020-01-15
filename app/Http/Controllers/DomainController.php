@@ -20,14 +20,17 @@ class DomainController extends BaseController
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), ['url' => 'required|url']);
+        $validator = Validator::make($request->all(), ['url' => 'required|active_url']);
         if ($validator->fails()) {
             return view('main', ['errors' => $validator->errors()]);
         }
 
         $urlFromInput = $request->input('url');
         $domain = Domain::firstOrCreate(['name' => $urlFromInput]);
-        dispatch(new CollectAdditionalData($domain));
+        
+        if ($domain->stateMachine()->can('process')) {
+            dispatch(new CollectAdditionalData($domain));
+        }
 
         return redirect(route('domains.show', ['id' => $domain]));
     }

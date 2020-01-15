@@ -14,10 +14,10 @@ return [
         ],
         'transitions' => [
             'process' => [
-                'from' => ['initiated'],
+                'from' => ['initiated', 'failed'],
                 'to' => 'completed',
             ],
-            'error' => [
+            'reject' => [
                 'from' => ['initiated'],
                 'to' => 'failed',
             ],
