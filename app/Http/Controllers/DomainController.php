@@ -32,7 +32,7 @@ class DomainController extends BaseController
             dispatch(new CollectAdditionalData($domain));
         }
 
-        return redirect(route('domains.show', ['id' => $domain]));
+        return redirect(route('domains.show', ['id' => $domain->id]));
     }
 
     public function show($id)
